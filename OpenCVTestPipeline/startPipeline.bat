@@ -49,7 +49,7 @@ aliceVision_cameraInit.exe ^
 	--input %VIEWPOINTS%
 call :checkReturnCode "aliceVision_cameraInit"
 
-C:\\Users\\Administrator\\Documents\\Projects\\OpenCVTestPipeline\\OpenCVTestPipeline.out\\build\\x64-Debug\\OpenCVTestPipeline\\OpenCVTestPipeline.exe ^
+OpenCVTestPipeline.out\\build\\x64-%CONFIG%\\OpenCVTestPipeline\\OpenCVTestPipeline.exe ^
 	--input Cache/CameraInit/cameraInit.sfm ^
 	--output Cache/ExtractionAndMatching/ ^
 	--threshold 6.0 ^
