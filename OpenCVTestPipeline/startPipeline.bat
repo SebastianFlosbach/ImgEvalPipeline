@@ -36,6 +36,10 @@ set DENSE_POINT_CLOUD=Cache/Meshing/densePointCloud.abc
 set FILTERED_MESH=Cache/MeshFiltering/mesh.obj
 set TEXTURING=Cache/Texturing
 
+if DEFINED %1 (
+	goto %1
+)
+
 aliceVision_cameraInit.exe ^
 	--sensorDatabase "C:/Users/Administrator/Documents/Programms/Meshroom-2021.1.0/aliceVision/share/aliceVision/cameraSensors.db" ^
 	--defaultFieldOfView 45.0 ^
@@ -101,9 +105,10 @@ aliceVision_prepareDenseScene ^
 	--verboseLevel info ^
 	--output %PREPARE_DENSE_SCENE% ^
 	--rangeStart 0 ^
-	--rangeSize N_IMAGES 
+	--rangeSize %N_IMAGES% 
 call :checkReturnCode "aliceVision_prepareDenseScene"
 
+:depthMapEstimation
 aliceVision_depthMapEstimation ^
 	--input %SFM_ABC% ^
 	--imagesFolder %PREPARE_DENSE_SCENE% ^
@@ -128,9 +133,10 @@ aliceVision_depthMapEstimation ^
 	--verboseLevel info ^
 	--output %DEPTH_MAP% ^
 	--rangeStart 0 ^
-	--rangeSize N_IMAGES
+	--rangeSize %N_IMAGES% 
 call :checkReturnCode "aliceVision_depthMapEstimation"
 
+:depthMapFiltering
 aliceVision_depthMapFiltering ^
 	--input %SFM_ABC% ^
 	--depthMapsFolder %DEPTH_MAP% ^
@@ -145,9 +151,10 @@ aliceVision_depthMapFiltering ^
 	--verboseLevel info ^
 	--output %DEPTH_MAP_FILTER% ^
 	--rangeStart 0 ^
-	--rangeSize N_IMAGES
+	--rangeSize %N_IMAGES% 
 call :checkReturnCode "aliceVision_depthMapFiltering"
 
+:meshing
 aliceVision_meshing ^
 	--input %SFM_ABC% ^
 	--depthMapsFolder %DEPTH_MAP_FILTER% ^
@@ -187,7 +194,8 @@ aliceVision_meshing ^
 	--outputMesh %MESH% ^
 	--output %DENSE_POINT_CLOUD% 
 call :checkReturnCode "aliceVision_meshing"
-	
+
+:meshFiltering
 aliceVision_meshFiltering ^
 	--inputMesh %MESH% ^
 	--keepLargestMeshOnly False ^
@@ -203,6 +211,7 @@ aliceVision_meshFiltering ^
 	--outputMesh %FILTERED_MESH% 
 call :checkReturnCode "aliceVision_meshFiltering"
 
+:texturing
 aliceVision_texturing ^
 	--input %DENSE_POINT_CLOUD% ^
 	--imagesFolder %PREPARE_DENSE_SCENE% ^
