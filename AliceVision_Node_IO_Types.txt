@@ -1,0 +1,36 @@
+FeatureExtraction:
+ Abhängig von verwendtetem Descriptor Typ
+ Für OpenCV SIFT in ImageDescriber_SIFT_openCV::describe:
+  KeyPoints als std::vector<cv::KeyPoint>
+  KeyPoint detection in ImageDescriber_SIFT_OCV::77
+   siftdetector->detect(img, v_keypoints);
+  Describtor als cv::Mat
+  Describtor computation in ImageDescriber_SIFT_OCV::143
+   siftdetector->compute(img, v_keypoints, m_desc);
+  KeyPoints und Descriptors werden in aliceVision::feature::Regions zusammengefasst ImageDescriber_SIFT_OCV::160-174
+  Dabei werden KeyPoints zu PointFeatures umgewandelt.
+  Regions werden als OutputParameter zurückgegeben.
+  
+ Features und Descriptors werden seperat gespeichtert durch aliceVision::feature::Regions::Save
+ Features werden als {imageId}.sift.feat abgespeichert mit Format:
+  Ein Feature pro Zeile mit vier Werten: x, y, scale, orientation
+ Descriptors werden als binary File {imageId}.sift.desc gespeichert.
+ "The description, which is typically stored in 128 bits, 
+  consists of a statistics of gradients computed in regions around the keypoint. 
+  The region size is determined by the keypoint scale and the orientation is determined by the dominant axis."
+  https://meshroom-manual.readthedocs.io/en/latest/feature-documentation/nodes/FeatureExtraction.html
+ 
+ImageMatching:
+ Erzeugt eine txt Datei mit einer Map von Image Matches.
+  Erste Spalte ist die Bild ID. Alle nachfolgenden IDs in der Zeile sind Matches für das Bild in der ersten Spalte.
+  Es werden keine doppelten Matches angezeigt.
+  https://meshroom-manual.readthedocs.io/en/latest/feature-documentation/nodes/ImageMatching.html
+  
+FeatureMatching:
+ Erzeugt mehrere txt Dateien im Format *.matches.txt wobei * eine fortlaufende Nummerierung mit 0 startend ist.
+ Innerhalb der Matches Datei befinden sich jeweils mehrere Blöcke an Matches in Image Paaren.
+ 1. Zeile: {imageId_1} {imageId_2}
+ 2. Zeile: 1 (Bedeutung noch unbekannt)
+ 3. Zeile: {Descriptor Typ} {Anzahl geometrische Matches}
+ 4. - n. Zeile: {Index Feature image_1} {Index Feature image_2}
+ https://meshroom-manual.readthedocs.io/en/latest/feature-documentation/nodes/FeatureMatching.html

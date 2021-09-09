@@ -1,0 +1,33 @@
+Problem(01.09.21):
+	Batch File terminiert mit Fehler "\NVIDIA was unexpected at this time"
+Grund:
+	%PATH% innerhalb eines if statements
+Lösung:
+	Delayed Expansion aktivieren und %PATH% durch !PATH! ersetzen
+	
+Problem(02.09.21):
+	aliceVision_depthMapEstimation Can't write output image file .../DepthMap/103053796_depthMap.exr
+Grund:
+	Ordnerstruktur wird nicht automatisch erstellt
+Lösung:
+	Ordner DepthMap von Hand erstellen
+	
+Problem(02.09.21):
+	aliceVision_depthMapFiltering Cannot find/open image file 927773649_depthMap.exr
+Grund:
+	Datei existiert nicht.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               .
+Lösung:
+	Bei aliceVision_depthMapEstimation --rangeSize auf Anzahl der Bilder setzen
+	
+Problem(06.09.21):
+	OpenCVTestPipeline CMake configuration schlägt fehl. IlmBase kann nicht gefunden werden.
+Grund:
+Lösung:
+	Environment Variable IlmBase_DIR setzen. %VCPGK_ROOT%\installed\x64-windows\share\ilmbase
+
+Problem(06.09.21):
+	OpenCVTestPipeline CMake Release Configuration schlägt fehl. Ceres_FOUND is set to FALSE
+Grund:
+	AliceVision_DIR zeigt auf die AliceVision Debug Version
+Lösung:
+	Für die Release Configuration AliceVision_DIR auf die Release Version von AliceVision setzen
