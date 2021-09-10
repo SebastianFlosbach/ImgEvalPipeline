@@ -36,7 +36,7 @@ set DENSE_POINT_CLOUD=Cache/Meshing/densePointCloud.abc
 set FILTERED_MESH=Cache/MeshFiltering/mesh.obj
 set TEXTURING=Cache/Texturing
 
-if DEFINED %1 (
+if NOT [%1]==[] (
 	goto %1
 )
 
@@ -56,7 +56,7 @@ call :checkReturnCode "aliceVision_cameraInit"
 OpenCVTestPipeline.out\\build\\x64-%CONFIG%\\OpenCVTestPipeline\\OpenCVTestPipeline.exe ^
 	--input Cache/CameraInit/cameraInit.sfm ^
 	--output Cache/ExtractionAndMatching/ ^
-	--threshold 6.0 ^
+	--threshold 3.0 ^
 	--features 5000
 call :checkReturnCode "OpenCVTestPipeline"
 
