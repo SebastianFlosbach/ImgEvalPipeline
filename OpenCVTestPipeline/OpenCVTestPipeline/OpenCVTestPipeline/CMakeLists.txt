@@ -20,7 +20,7 @@ add_executable (OpenCVTestPipeline
     "ThreadedMatcher.hpp" 
     "ThreadPool.hpp" 
     "MatchingPair.hpp"
-)
+ "ConsoleLogger.hpp" "ConsoleLogger.cpp")
 set_target_properties(OpenCVTestPipeline PROPERTIES CXX_STANDARD 17)
 target_include_directories(OpenCVTestPipeline PUBLIC ${Boost_INCLUDE_DIR})
 target_link_libraries (OpenCVTestPipeline PUBLIC IlmBase::Iex IlmBase::Half IlmBase::Imath IlmBase::IexMath opencv_core opencv_imgcodecs opencv_highgui aliceVision_sfmDataIO ${Boost_PROGRAM_OPTIONS_LIBRARY})

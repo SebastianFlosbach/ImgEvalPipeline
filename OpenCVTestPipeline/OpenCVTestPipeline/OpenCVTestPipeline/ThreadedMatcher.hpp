@@ -6,6 +6,7 @@
 #include "MatchData.hpp"
 #include "MatchingPair.hpp"
 #include "ThreadPool.hpp"
+#include "ConsoleLogger.hpp"
 
 #include <opencv2/calib3d.hpp>
 #include <opencv2/core/types.hpp>
@@ -17,9 +18,10 @@
 
 class ThreadedMatcher : public ThreadPool<MatchingPair, MatchData> {
 public:
-	ThreadedMatcher(double ransacThreshold, const std::vector<FeatureContainer>& features) : 
-		ThreadPool(std::bind(&ThreadedMatcher::match, this, std::placeholders::_1)), 
-		ransacThreshold_(ransacThreshold)
+	ThreadedMatcher(double ransacThreshold, const std::vector<FeatureContainer>& features) :
+		ThreadPool(std::bind(&ThreadedMatcher::match, this, std::placeholders::_1)),
+		ransacThreshold_(ransacThreshold),
+		logger_(ConsoleLogger::instance())
 	{
 		for (size_t indexImage1 = 0; indexImage1 < features.size() - 1; indexImage1++) {
 			for (size_t indexImage2 = indexImage1 + 1; indexImage2 < features.size(); indexImage2++) {
@@ -30,6 +32,7 @@ public:
 
 private:
 	double ransacThreshold_;
+	ConsoleLogger* logger_;
 
 	MatchData match(const MatchingPair& pair) {
 		cv::Mat fundamentalMat, mask;
@@ -60,7 +63,7 @@ private:
 			}
 		}
 
-		std::cout << "Match " << getResultCount() + 1 << "/" << getInputCount() << " finished." << std::endl;
+		logger_->log("Match " + std::to_string(getResultCount() + 1) + "/" + std::to_string(getInputCount()) + " finished.");
 		return { idImage1, idImage2, ransac_matches };
 	}
 
