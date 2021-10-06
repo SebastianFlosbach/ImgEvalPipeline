@@ -1,7 +1,9 @@
 ﻿#include "ImageData.hpp"
 #include "OutputWriter.hpp"
-#include "ThreadedFeatureExtractor.hpp"
-#include "ThreadedMatcher.hpp"
+#include "FeatureDetection/ThreadedFeatureExtractor.hpp"
+#include "FeatureMatching/ThreadedMatcher.hpp"
+#include "FeatureMatching/FlannMatcher.hpp"
+#include "FeatureMatching/IMatcher.hpp"
 
 #include <filesystem>
 #include <fstream>
@@ -32,6 +34,7 @@ int main(int argc, const char* argv[])
 	std::string outputPath;
 	double ransacThreshold;
 	int minFeatures;
+	bool outputMatches;
 
 	po::options_description params("Params");
 	params.add_options()
@@ -39,7 +42,8 @@ int main(int argc, const char* argv[])
 		("input,i", po::value<std::string>(&sfmDataPath)->required(), "SfMData file.")
 		("output,o", po::value<std::string>(&outputPath)->required(), "Output path for the features and descriptors files (*.feat, *.desc).")
 		("threshold,t", po::value<double>(&ransacThreshold)->default_value(2.0), "Threshold for RANSAC filtering.")
-		("features,f", po::value<int>(&minFeatures)->default_value(400), "Number of features to retain.");
+		("features,f", po::value<int>(&minFeatures)->default_value(400), "Number of features to retain.")
+		("outputMatches,om", po::value<bool>(&outputMatches)->default_value(false), "Enable output of match visualisation.");
 
 	po::variables_map vm;
 	po::store(po::parse_command_line(argc, argv, params), vm);
@@ -74,6 +78,7 @@ int main(int argc, const char* argv[])
 	OutputWriter writer = OutputWriter(outputPath);
 	writer.clearOutputDirectory();
 
+	std::cout << "Extracting features" << std::endl;
 	ThreadedFeatureExtractor extractor = ThreadedFeatureExtractor(minFeatures);
 	for (const auto& image : images) {
 		extractor.addInput(image);
@@ -86,13 +91,38 @@ int main(int argc, const char* argv[])
 		writer.writeRegions(feature.imageId, feature.regions);
 	}
 
-	ThreadedMatcher matcher = ThreadedMatcher(ransacThreshold, features);
-	matcher.run();
-	matcher.wait();
-	std::vector<MatchData> matchData = matcher.getResults();
+	std::cout << "Calculating matches" << std::endl;
+	IMatcher_ptr matcher = std::unique_ptr<IMatcher>(new ThreadedMatcher(ransacThreshold));
+	//IMatcher_ptr matcher = std::unique_ptr<IMatcher>(new FlannMatcher());
+	std::vector<MatchData> matchData = matcher->match(features);
+
+	//std::cout << "Filtering matches" << std::endl;
+	//const float ratio_thresh = 0.8f;
+	//std::vector<MatchData> goodMatchData;
+	//for (size_t i = 0; i < matchData.size(); i++)
+	//{
+	//	if (matchData[i].matches[0].distance < ratio_thresh * matchData[i].matches[1].distance) {
+	//		goodMatchData.push_back(matchData[i]);
+	//	}
+	//}
+	//std::cout << goodMatchData.size() << " good matches remaining" << std::endl;
 
 	for (const auto& match : matchData) {
-		writer.writeMatches(std::to_string(match.idImage1), std::to_string(match.idImage2), match.matches);
+		writer.writeMatches(std::to_string(match.idImage1), std::to_string(match.idImage2), match.matches);	
+
+		if (outputMatches) {
+			int idImage1 = match.idImage1;
+			int idImage2 = match.idImage2;
+			auto itImg1 = std::find_if(images.begin(), images.end(), [idImage1](const ImageData& image) { return image.id == idImage1; });
+			auto itImg2 = std::find_if(images.begin(), images.end(), [idImage2](const ImageData& image) { return image.id == idImage2; });
+			auto itFtr1 = std::find_if(features.begin(), features.end(), [idImage1](const FeatureContainer& feature) { return feature.imageId == idImage1; });
+			auto itFtr2 = std::find_if(features.begin(), features.end(), [idImage2](const FeatureContainer& feature) { return feature.imageId == idImage2; });
+
+			cv::Mat matchImage;
+			cv::drawMatches(itImg1->image, itFtr1->keyPoints, itImg2->image, itFtr2->keyPoints, match.matches, matchImage, 5);
+			std::string fileName = "match_" + std::to_string(idImage1) + "_" + std::to_string(idImage2) + ".jpg";
+			cv::imwrite(fileName, matchImage);
+		}
 	}
 
 	return EXIT_SUCCESS;

@@ -2,7 +2,7 @@
 #define MATCHING_PAIR_HPP
 
 
-#include "FeatureContainer.hpp"
+#include "FeatureDetection/FeatureContainer.hpp"
 
 struct MatchingPair {
 	const FeatureContainer& image1;

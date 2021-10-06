@@ -15,21 +15,19 @@ class ThreadedFeatureExtractor : public ThreadPool<ImageData, FeatureContainer> 
 public:
 	ThreadedFeatureExtractor(int minHessian) : 
 		ThreadPool(std::bind(&ThreadedFeatureExtractor::extract, this, std::placeholders::_1)), 
-		minHessian_(minHessian),
-		logger_(ConsoleLogger::instance())
+		minHessian_(minHessian)
 	{
 	}
 
 private:
 	int minHessian_;
-	ConsoleLogger* logger_;
 
 	FeatureContainer extract(const ImageData& imageData) {
 		OpenCVSIFTFeatureExtractor extractor = OpenCVSIFTFeatureExtractor(minHessian_);
 
 		auto features = extractor.calculateRegions(imageData);
 
-		logger_->log("Feature extraction " + std::to_string(getResultCount() + 1) + "/" + std::to_string(getInputCount()) + " done.");
+		logFinish(std::string("Features: ") + std::to_string(features.keyPoints.size()));
 
 		return features;
 	}

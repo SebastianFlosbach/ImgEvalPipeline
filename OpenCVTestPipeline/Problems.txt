@@ -31,3 +31,18 @@ Grund:
 	AliceVision_DIR zeigt auf die AliceVision Debug Version
 Lösung:
 	Für die Release Configuration AliceVision_DIR auf die Release Version von AliceVision setzen
+	
+Problem(28.09.21):
+	Wenn startPipeline in der Console ausgeführt wird, gibt aliceVision_cameraInit.exe den Errorcode -1073741515 zurück
+Grund:
+	Benötigte DLLs können nicht gefunden werden
+Lösung:
+	(Temporär) Fehlende DLLs vom Buildverzeichnis von AliceVision ins Installverzeichnis kopieren.
+	Fehlende DLLs identifizieren und an die PATH Variable anhängen.
+	
+Problem(01.10.21):
+	aliceVision_cameraInit auf Reichtagsbilder angewendet resultiert in std::out_of_range error.
+Grund:
+	AliceVision versucht im Bildernamen einen Index zu finden. Die Reichstagsbilder haben große Zahlen im Namen und der Versuch diese zum Integer zu konvertieren schlägt daher fehl.
+Lösung:
+	Bilder umbenennen

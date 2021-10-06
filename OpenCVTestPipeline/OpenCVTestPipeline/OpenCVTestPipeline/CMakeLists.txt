@@ -8,21 +8,12 @@ find_package (IlmBase CONFIG REQUIRED)
 find_package (OpenCV CONFIG REQUIRED core imgcodecs highgui)
 find_package (AliceVision CONFIG REQUIRED)
 
-add_executable (OpenCVTestPipeline 
-    "OpenCVTestPipeline.cpp"  
-    "ImageData.hpp" 
-    "OpenCVSIFTFeatureExtractor.hpp" 
-    "OutputWriter.hpp" 
-    "Matcher.hpp" 
-    "MatchData.hpp" 
-    "ThreadedFeatureExtractor.hpp" 
-    "FeatureContainer.hpp" 
-    "ThreadedMatcher.hpp" 
-    "ThreadPool.hpp" 
-    "MatchingPair.hpp"
- "ConsoleLogger.hpp" "ConsoleLogger.cpp")
+file(GLOB_RECURSE "SOURCES" "include/*.hpp" "src/*.cpp")
+message(STATUS ${SOURCES})
+
+add_executable (OpenCVTestPipeline ${SOURCES})
 set_target_properties(OpenCVTestPipeline PROPERTIES CXX_STANDARD 17)
-target_include_directories(OpenCVTestPipeline PUBLIC ${Boost_INCLUDE_DIR})
+target_include_directories(OpenCVTestPipeline PUBLIC ${Boost_INCLUDE_DIR} "include")
 target_link_libraries (OpenCVTestPipeline PUBLIC IlmBase::Iex IlmBase::Half IlmBase::Imath IlmBase::IexMath opencv_core opencv_imgcodecs opencv_highgui aliceVision_sfmDataIO ${Boost_PROGRAM_OPTIONS_LIBRARY})
 
 if($<CONFIG:Debug>)

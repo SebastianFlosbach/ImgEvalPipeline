@@ -3,7 +3,7 @@
 setlocal EnableDelayedExpansion
 
 set CONFIG=Release
-set N_IMAGES=49
+set N_IMAGES=75
 
 set PATH=%PATH%;%AliceVision_INSTALL%/%CONFIG%/bin
 if "%CONFIG%"=="Release" (
@@ -36,6 +36,9 @@ set DENSE_POINT_CLOUD=Cache/Meshing/densePointCloud.abc
 set FILTERED_MESH=Cache/MeshFiltering/mesh.obj
 set TEXTURING=Cache/Texturing
 
+set INITIAL_PAIR_A=""
+set INITIAL_PAIR_B=""
+
 if NOT [%1]==[] (
 	goto %1
 )
@@ -56,8 +59,8 @@ call :checkReturnCode "aliceVision_cameraInit"
 OpenCVTestPipeline.out\\build\\x64-%CONFIG%\\OpenCVTestPipeline\\OpenCVTestPipeline.exe ^
 	--input Cache/CameraInit/cameraInit.sfm ^
 	--output Cache/ExtractionAndMatching/ ^
-	--threshold 3.0 ^
-	--features 5000
+	--threshold 42.0 ^
+	--features 20000
 call :checkReturnCode "OpenCVTestPipeline"
 
 :incrementalSfM
@@ -86,14 +89,16 @@ aliceVision_incrementalSfM.exe ^
 	--useRigConstraint True ^
 	--lockAllIntrinsics False ^
 	--filterTrackForks False ^
-	--initialPairA "" ^
-	--initialPairB "" ^
+	--initialPairA %INITIAL_PAIR_A% ^
+	--initialPairB %INITIAL_PAIR_B% ^
 	--interFileExtension .abc ^
 	--verboseLevel info ^
 	--output %SFM_ABC% ^
 	--outputViewsAndPoses %CAMERAS_SFM% ^
 	--extraInfoFolder "Cache/StructureFromMotion"
 call :checkReturnCode "aliceVision_incrementalSfM"
+
+exit
 
 :prepareDenseScene
 aliceVision_prepareDenseScene ^
@@ -241,7 +246,11 @@ exit
 
 :checkReturnCode
 if %ERRORLEVEL% NEQ 0 (
-	echo %1 failed with error code %ERRORLEVEL%
+	if %ERRORLEVEL% == --1073741515 (
+		echo %1 is missing required dependencies
+	) else (
+		echo %1 failed with error code %ERRORLEVEL%
+	)
 	exit
 )
 exit /B 0
