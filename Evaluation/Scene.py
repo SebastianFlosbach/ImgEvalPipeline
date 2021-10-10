@@ -22,7 +22,7 @@ class Scene:
         readName = True
         for line in alembic:
             if readName:
-                name = line
+                name = line[:-1]
                 readName = False
             else:
                 qelements = line.split()

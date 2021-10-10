@@ -403,4 +403,5 @@ FodyWeavers.xsd
 
 # Custom
 *.out
+/out
 Cache

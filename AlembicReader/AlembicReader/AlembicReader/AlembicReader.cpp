@@ -7,6 +7,8 @@
 #include <Alembic/AbcCoreOgawa/All.h>
 #include <Alembic/AbcGeom/All.h>
 
+#include <boost/program_options.hpp>
+
 #include <cmath>
 #include <filesystem>
 #include <fstream>
@@ -14,18 +16,37 @@
 
 using namespace Alembic::Abc;
 using namespace Alembic;
-
+namespace po = boost::program_options;
 
 int indentation = -1;
 void printObject(const IObject& obj);
 void printProperties(const ICompoundProperty& prop);
 
-int main()
+int main(int argc, const char* argv[])
 {
-	std::ofstream outfile;
-	outfile.open("Poses", std::ofstream::out | std::ofstream::trunc);
+	std::string sfmFile;
+	std::string outputFile;
 
-	Alembic::Abc::IArchive archive(Alembic::AbcCoreOgawa::ReadArchive(), "C:/Users/Administrator/Documents/Data/MeshroomCache/StructureFromMotion/d6d9ffbc57ff2c1c1f9b9439587bb0f3fd9dd0b2/sfm.abc", Alembic::Abc::ErrorHandler::kThrowPolicy);
+	po::options_description params("Params");
+	params.add_options()
+		("help,h", "Produce help message.")
+		("input,i", po::value<std::string>(&sfmFile)->required(), "SfMData file.")
+		("output,o", po::value<std::string>(&outputFile)->required(), "Output file for poses.");
+
+	po::variables_map vm;
+	po::store(po::parse_command_line(argc, argv, params), vm);
+
+	if (vm.count("help") || argc == 1) {
+		std::cout << params << std::endl;
+		return EXIT_SUCCESS;
+	}
+
+	vm.notify();
+
+	std::ofstream outfile;
+	outfile.open(outputFile, std::ofstream::out | std::ofstream::trunc);
+
+	Alembic::Abc::IArchive archive(Alembic::AbcCoreOgawa::ReadArchive(), sfmFile, Alembic::Abc::ErrorHandler::kThrowPolicy);
 	Alembic::Abc::IObject archiveTop = archive.getTop();
 
 	IObject root(archiveTop, "mvgRoot");
@@ -112,7 +133,16 @@ int main()
 				end = name.find(delim, start);
 			}
 
-			outfile << splits.back() << std::endl;
+			std::string poseName;
+			for (size_t i = 3; i < splits.size(); i++)
+			{
+				poseName.append(splits[i]);
+				if (i != splits.size() - 1) {
+					poseName.append("_");
+				}
+			}
+
+			outfile << poseName << std::endl;
 			outfile << qw << " " << qx << " " << qy << " " << qz << std::endl;
 		}
 	}

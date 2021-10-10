@@ -3,9 +3,9 @@
 setlocal EnableDelayedExpansion
 
 set CONFIG=Release
-set N_IMAGES=75
+set N_IMAGES=49
 
-set PATH=%PATH%;%AliceVision_INSTALL%/%CONFIG%/bin
+set PATH=%PATH%;%AliceVision_INSTALL%/Release/bin
 if "%CONFIG%"=="Release" (
 	set PATH=!PATH!;%VCPKG_ROOT%/installed/x64-windows/bin
 ) else if "%CONFIG%"=="Debug" (
@@ -59,8 +59,8 @@ call :checkReturnCode "aliceVision_cameraInit"
 OpenCVTestPipeline.out\\build\\x64-%CONFIG%\\OpenCVTestPipeline\\OpenCVTestPipeline.exe ^
 	--input Cache/CameraInit/cameraInit.sfm ^
 	--output Cache/ExtractionAndMatching/ ^
-	--threshold 42.0 ^
-	--features 20000
+	--threshold 2.0 ^
+	--features 0
 call :checkReturnCode "OpenCVTestPipeline"
 
 :incrementalSfM

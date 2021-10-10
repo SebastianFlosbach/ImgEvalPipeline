@@ -29,8 +29,8 @@ std::vector<MatchData> ThreadedMatcher::match(const std::vector<FeatureContainer
 
 MatchData ThreadedMatcher::work(const MatchingPair& pair) {
 	cv::Mat fundamentalMat, mask;
-	//cv::BFMatcher matcher;
-	cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::BRUTEFORCE);
+	cv::Ptr<cv::BFMatcher> matcher = cv::BFMatcher::create();
+	//cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create(cv::DescriptorMatcher::BRUTEFORCE);
 
 	std::vector<cv::DMatch> matches;
 	std::vector<cv::DMatch> ransac_matches;

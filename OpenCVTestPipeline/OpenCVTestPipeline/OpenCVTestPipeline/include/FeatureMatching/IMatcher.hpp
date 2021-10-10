@@ -13,9 +13,8 @@ class IMatcher {
 public:
 	virtual std::vector<MatchData> match(const std::vector<MatchingPair>& pairs) = 0;
 	virtual std::vector<MatchData> match(const std::vector<FeatureContainer>& features) = 0;
-
 };
-typedef std::unique_ptr<IMatcher> IMatcher_ptr
+typedef std::shared_ptr<IMatcher> IMatcher_ptr;
 
 
 #endif
