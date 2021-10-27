@@ -7,16 +7,32 @@ set (Boost_PROGRAM_OPTIONS_LIBRARY $ENV{VCPKG_ROOT}/installed/x64-windows/lib/bo
 find_package (IlmBase CONFIG REQUIRED)
 find_package (OpenCV CONFIG REQUIRED core imgcodecs highgui features2d xfeatures2d)
 find_package (AliceVision CONFIG REQUIRED)
+find_package (HDF5 NAMES hdf5 COMPONENTS CXX SHARED CONFIG REQUIRED)
+
+message(STATUS "HDF5: " ${HDF5_INCLUDE_DIR})
 
 file(GLOB_RECURSE "SOURCES" "include/*.hpp" "src/*.cpp")
 message(STATUS ${SOURCES})
 
 add_executable (OpenCVTestPipeline ${SOURCES})
 set_target_properties(OpenCVTestPipeline PROPERTIES CXX_STANDARD 17)
-target_include_directories(OpenCVTestPipeline PUBLIC ${Boost_INCLUDE_DIR} "include")
-target_link_libraries (OpenCVTestPipeline PUBLIC IlmBase::Iex IlmBase::Half IlmBase::Imath IlmBase::IexMath opencv_core opencv_imgcodecs opencv_highgui opencv_features2d opencv_xfeatures2d aliceVision_sfmDataIO ${Boost_PROGRAM_OPTIONS_LIBRARY})
+target_include_directories(OpenCVTestPipeline PUBLIC ${Boost_INCLUDE_DIR} "include" ${HDF5_INCLUDE_DIR})
+target_link_libraries (OpenCVTestPipeline PUBLIC 
+    IlmBase::Iex 
+    IlmBase::Half 
+    IlmBase::Imath 
+    IlmBase::IexMath 
+    opencv_core 
+    opencv_imgcodecs 
+    opencv_highgui 
+    opencv_features2d 
+    opencv_xfeatures2d 
+    aliceVision_sfmDataIO 
+    ${Boost_PROGRAM_OPTIONS_LIBRARY}
+    C:/Users/Administrator/Documents/Programms/vcpkg/installed/x64-windows/lib/hdf5.lib
+)
 
-if($<CONFIG:Debug>)
+if(CMAKE_BUILD_TYPE MATCHES Debug)
     set(ALICEVISION_CONFIG Debug)
 else()
     set(ALICEVISION_CONFIG Release)

@@ -60,7 +60,7 @@ OpenCVTestPipeline.out\\build\\x64-%CONFIG%\\OpenCVTestPipeline\\OpenCVTestPipel
 	--input Cache/CameraInit/cameraInit.sfm ^
 	--output Cache/ExtractionAndMatching/ ^
 	--threshold 2.0 ^
-	--features 0
+	--features 20000
 call :checkReturnCode "OpenCVTestPipeline"
 
 :incrementalSfM
@@ -84,9 +84,9 @@ aliceVision_incrementalSfM.exe ^
 	--minAngleForLandmark 2.0 ^
 	--maxReprojectionError 4.0 ^
 	--minAngleInitialPair 5.0 ^
-	--maxAngleInitialPair 40.0 ^
-	--useOnlyMatchesFromInputFolder False ^
-	--useRigConstraint True ^
+	--maxAngleInitialPair 45.0 ^
+	--useOnlyMatchesFromInputFolder True ^
+	--useRigConstraint False ^
 	--lockAllIntrinsics False ^
 	--filterTrackForks False ^
 	--initialPairA %INITIAL_PAIR_A% ^

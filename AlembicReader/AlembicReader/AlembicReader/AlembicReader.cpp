@@ -76,7 +76,7 @@ int main(int argc, const char* argv[])
 			double mT13 = mT.x[1][3];
 			double mT23 = mT.x[2][3];
 
-			//Imath::V3d translation = { mT03, mT13, mT23 };
+			Imath::V3d translation = { mT03, mT13, mT23 };
 
 			mT.x[0][3] = 0;
 			mT.x[1][3] = 0;
@@ -144,6 +144,7 @@ int main(int argc, const char* argv[])
 
 			outfile << poseName << std::endl;
 			outfile << qw << " " << qx << " " << qy << " " << qz << std::endl;
+			outfile << translation[0] << " " << translation[1] << " " << translation[2] << std::endl;
 		}
 	}
 

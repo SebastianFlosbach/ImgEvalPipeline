@@ -22,7 +22,7 @@ namespace avf = aliceVision::feature;
 class OcvSiftFeatureDetector : IFeatureDetector {
 public:
 	OcvSiftFeatureDetector(const Config& config) : config_(config) {
-		detector_ = cv::SIFT::create(config_.minFeatures, 5, 0.03, 15, 1.4);
+		detector_ = cv::SIFT::create(config_.minFeatures, 6);
 	}
 
 	FeatureContainer detectFeatures(const ImageData& imageData) override {

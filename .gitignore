@@ -405,3 +405,8 @@ FodyWeavers.xsd
 *.out
 /out
 Cache
+/evaluation_sacre_coeur.txt
+/Evaluation
+/DFM_modul
+/DFMToAliceVision
+/AlembicReader
