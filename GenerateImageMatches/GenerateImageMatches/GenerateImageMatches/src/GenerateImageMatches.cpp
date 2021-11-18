@@ -31,7 +31,7 @@ int main()
 		std::filesystem::path imagePath(entry.second.get()->getImagePath());
 		std::string imageId = std::to_string(entry.second.get()->getViewId());
 		images[imageId] = imagePath.stem().string();
-		std::cout << imageId << " <-> " << imagePath.stem().string() << std::endl;
+		//std::cout << imageId << " <-> " << imagePath.stem().string() << std::endl;
 	}
 
 	std::ifstream inputStream;
