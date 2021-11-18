@@ -1,8 +1,8 @@
 set PATH=%PATH%;%AliceVision_INSTALL%/Release/bin
 
 aliceVision_imageMatching ^
-	--input "c:/Users/Administrator/Documents/Data/MeshroomCache/StructureFromMotion/22e9e0804614e2d65ec512ce9f0ec30bf5093f5b/sfm.abc" ^
-	--featuresFolders "c:/Users/Administrator/Documents/Data/MeshroomCache/FeatureExtraction/933795cf5b0476d007ddd817f6127a827df49240" ^
+	--input "C:/Users/Administrator/Documents/Data/GL3D/MeshroomCache/CameraInit/7069d6652333a248ae475e5503d5add4e8c88f08/cameraInit.sfm" ^
+	--featuresFolders "C:/Users/Administrator/Documents/Data/GL3D/MeshroomCache/FeatureExtraction/b0bf3100568f78079d87e005541328be04571adb" ^
 	--method VocabularyTree ^
 	--verboseLevel info ^
 	--minNbImages 0 ^

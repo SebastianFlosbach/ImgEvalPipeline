@@ -14,9 +14,9 @@ namespace avf = aliceVision::feature;
 
 int main()
 {
-	std::string input = "C:/Users/Administrator/Documents/Projects/OpenCVTestPipeline/imageMatches.txt";
-	std::string output = "C:/Users/Administrator/Documents/Projects/OpenCVTestPipeline/imageMatchesDFM.txt";
-	std::string sfmDataPath = "C:/Users/Administrator/Documents/Projects/OpenCVTestPipeline/Cache/CameraInit/cameraInit.sfm";
+	std::string input = "imageMatches.txt";
+	std::string output = "relations.txt";
+	std::string sfmDataPath = "Cache/CameraInit/cameraInit.sfm";
 
 	aliceVision::sfmData::SfMData sfmData;
 	std::cout << "Reading sfmData from " << sfmDataPath << std::endl;

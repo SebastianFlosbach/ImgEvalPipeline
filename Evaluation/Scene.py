@@ -1,6 +1,6 @@
 import numpy as np
 import quaternion
-from colmap.scripts.python.read_write_model import read_model, qvec2rotmat
+from colmap.scripts.python.read_write_model import read_model, qvec2rotmat, rotmat2qvec
 from colmap.scripts.python.read_dense import read_array
 from imageio import imread
 import matplotlib.pyplot as plt
@@ -65,3 +65,34 @@ class Scene:
             q = [config['q'][0], config['q'][1], config['q'][2], config['q'][3]]
             t = [config['T'][0], config['T'][1], config['T'][2]]
             self.addPose(name, Pose(q, t))
+
+    def readGL3D(self, path):
+        cameras = []
+        with open(path, "r") as file:
+            cameras = file.readlines()
+        
+        # One line of data per image:
+        # IMAGE_ID, FX, FY, PX, PY, SKEW, TRANSLATION VECTOR (3x1), ROTATION MATRIX (3x3), RADIAL DISTORTION (3x1), IMAGE SIZE (2x1).
+        for line in cameras:
+            data = line.split()
+            id = data[0].zfill(8)
+
+            translation = np.empty(3)
+            translation[0] = float(data[6])
+            translation[1] = float(data[7])
+            translation[2] = float(data[8])
+
+            rotation = np.empty((3, 3))
+            rotation[0][0] = float(data[9])
+            rotation[1][0] = float(data[10])
+            rotation[2][0] = float(data[11])
+            rotation[0][1] = float(data[12])
+            rotation[1][1] = float(data[13])
+            rotation[2][1] = float(data[14])
+            rotation[0][2] = float(data[15])
+            rotation[1][2] = float(data[16])
+            rotation[2][2] = float(data[17])
+
+            pose = Pose(rotmat2qvec(rotation), translation)
+            self.addPose(id, pose)
+

@@ -3,7 +3,7 @@
 setlocal EnableDelayedExpansion
 
 set CONFIG=Release
-set N_IMAGES=49
+set N_IMAGES=30
 
 set PATH=%PATH%;%AliceVision_INSTALL%/Release/bin
 if "%CONFIG%"=="Release" (

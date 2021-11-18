@@ -3,17 +3,6 @@ import quaternion
 from Scene import Scene
 import math
 import matplotlib.pyplot as plt
-from utils.eval_helper import align, align_model, quaternion_matrix, quaternion_from_matrix
-
-# def quaternionAngle(q_gt, q):
-#     q = np.array([q.w, q.x, q.y, q.z])
-#     q_gt = np.array([q_gt.w, q_gt.x, q_gt.y, q_gt.z])
-#     eps = 1e-15
-#     q = q / (np.linalg.norm(q) + eps)
-#     q_gt = q_gt / (np.linalg.norm(q_gt) + eps)
-#     loss_q = np.maximum(eps, (1.0 - np.sum(q * q_gt)**2))
-#     err_q = np.arccos(1 - 2 * loss_q)
-#     return err_q
 
 def quaternionAngle(q_gt, q):
    diff = q_gt * np.conjugate(q)
@@ -49,44 +38,36 @@ def reduce(m):
 groundTruth = Scene()
 estimation = Scene()
 
-#groundTruth.readCalibration('C:/Users/Administrator/Documents/Data/sacre_coeur/set_100/calibration')
-groundTruth.readAlembic('C:/Users/Administrator/Documents/Projects/Evaluation/poses_affe_av.txt')
-#estimation.readCalibration('C:/Users/Administrator/Documents/Data/sacre_coeur/set_100/calibration')
-estimation.readAlembic('C:/Users/Administrator/Documents/Projects/Evaluation/poses_affe_dfm.txt')
+#groundTruth.readCalibration('C:/Users/Administrator/Documents/Data/st_peters_square/set_100/calibration')
+groundTruth.readGL3D('C:/Users/Administrator/Documents/Data/GL3D/data/59f70ab1e5c5d366af29bf3e/geolabel/cameras.txt')
+estimation.readAlembic('C:/Users/Administrator/Documents/Projects/Evaluation/poses_GL3D_av.txt')
 
 estimationKeys = list(estimation.poses.keys())
 angles = []
 for eKey1 in list(estimationKeys):
     estimationKeys.remove(eKey1)
     if not eKey1 in groundTruth.poses:
-        angles.append(float('inf'))
+        #angles.append(float('inf'))
         continue
     for eKey2 in list(estimationKeys):
         diff_gt = quaternionAngle(groundTruth.poses[eKey1].rotation, groundTruth.poses[eKey2].rotation)
         diff_e = quaternionAngle(estimation.poses[eKey1].rotation, estimation.poses[eKey2].rotation)
-        #diff_t_gt = translationAngle(groundTruth.poses[eKey1].translation, groundTruth.poses[eKey2].translation)
-        #diff_t = translationAngle(estimation.poses[eKey1].translation, estimation.poses[eKey2].translation)
         dq = abs(diff_gt - diff_e)
-        #dt = abs(diff_t_gt - diff_t)
         print(eKey1, eKey2)
         print("\tRotation:")
         print("\t\tEstimation:", math.degrees(diff_e))
         print("\t\tGround Truth:", math.degrees(diff_gt))
         print("\t\tDifference:", math.degrees(dq))
-        #print("\tTranslation:")
-        #print("\t\tEstimation:", math.degrees(diff_t))
-        #print("\t\tGround Truth:", math.degrees(diff_t_gt))
-        #print("\t\tDifference:", math.degrees(dt))
-        #if dq >= dt:
-        #    angles.append(math.degrees(dq))
-        #else:
-        #    angles.append(math.degrees(dt))
-        angles.append(math.degrees(dq))
-
+        if(math.degrees(dq) < 180):
+            angles.append(math.degrees(dq))
+        else:
+            angles.append(360 - math.degrees(dq))
+            
 # Append missing angles from missing groundTruth keys
 for k in groundTruth.poses.keys():
     if not k in estimation.poses:
-        angles.append(float('inf'))
+        #angles.append(float('inf'))
+        continue
 
 threshold = 10
 counter = 0
