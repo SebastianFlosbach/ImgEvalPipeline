@@ -1,7 +1,7 @@
 from PIL import Image
 import glob
 
-sourcePath = 'C:/Users/Administrator/Desktop/urd/'
+sourcePath = 'C:/Users/Administrator/Documents/Data/Fotos Affe/'
 destinationPath = "C:/Users/Administrator/Desktop/ImgEvalPipeline/visualize/"
 
 fileCounter = 0
