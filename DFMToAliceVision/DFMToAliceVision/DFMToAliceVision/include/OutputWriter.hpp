@@ -70,7 +70,7 @@ private:
 	std::string basePath_;
 	int currentMatchFileIndex_ = 0;
 	int currentMatchFileLength_ = 0;
-	int matchFileMaxLength_ = 500000;
+	int matchFileMaxLength_ = 25000;
 
 	const std::string regionsDirectory = "/regions/";
 	const std::string matchesDirectory = "/matches/";
