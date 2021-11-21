@@ -2,9 +2,9 @@ import cv2 as cv
 import glob
 
 image1Path = 'C:/Users/Administrator/Desktop/ImgEvalPipeline/visualize/0.jpg'
-image2Path = 'C:/Users/Administrator/Desktop/ImgEvalPipeline/visualize/1.jpg'
-kp1Path = 'C:/Users/Administrator/Desktop/ImgEvalPipeline/Cache/dfm/ExtractionAndMatching/regions/1162776578.sift.feat'
-kp2Path = 'C:/Users/Administrator/Desktop/ImgEvalPipeline/Cache/dfm/ExtractionAndMatching/regions/1230051262.sift.feat'
+image2Path = 'C:/Users/Administrator/Desktop/ImgEvalPipeline/visualize/14.jpg'
+kp1Path = 'C:/Users/Administrator/Desktop/ImgEvalPipeline/Cache/dfm/ExtractionAndMatching/regions/1240514759.sift.feat'
+kp2Path = 'C:/Users/Administrator/Desktop/ImgEvalPipeline/Cache/dfm/ExtractionAndMatching/regions/2046071108.sift.feat'
 matchPath = 'C:/Users/Administrator/Desktop/ImgEvalPipeline/matches.txt'
 
 image1 = cv.imread(image1Path)

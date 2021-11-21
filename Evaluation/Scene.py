@@ -59,12 +59,14 @@ class Scene:
            self.addPose(image.name, Pose(image.qvec))
 
     def readCalibration(self, path):
+        counter = 0
         for filename in glob.glob(os.path.join(path, '*.h5')):
             config = h5py.File(filename, 'r')
             name = os.path.basename(filename)[12:-3]
             q = [config['q'][0], config['q'][1], config['q'][2], config['q'][3]]
             t = [config['T'][0], config['T'][1], config['T'][2]]
             self.addPose(name, Pose(q, t))
+            counter += 1
 
     def readGL3D(self, path):
         cameras = []
@@ -96,3 +98,34 @@ class Scene:
             pose = Pose(rotmat2qvec(rotation), translation)
             self.addPose(id, pose)
 
+    def readMVS(self, path):
+        idCounter = 0
+        for filename in glob.iglob(os.path.join(path, '*.camera')):
+            with open(filename, 'r') as file:
+                lines = file.readlines()
+
+                rotationL1 = lines[4].split()
+                rotationL2 = lines[5].split()
+                rotationL3 = lines[6].split()
+
+                rotation = np.empty((3, 3))
+                rotation[0][0] = float(rotationL1[0])
+                rotation[1][0] = float(rotationL1[1])
+                rotation[2][0] = float(rotationL1[2])
+                rotation[0][1] = float(rotationL2[0])
+                rotation[1][1] = float(rotationL2[1])
+                rotation[2][1] = float(rotationL2[2])
+                rotation[0][2] = float(rotationL3[0])
+                rotation[1][2] = float(rotationL3[1])
+                rotation[2][2] = float(rotationL3[2])
+
+                translationL1 = lines[7].split()
+                
+                translation = np.empty(3)
+                translation[0] = float(translationL1[0])
+                translation[1] = float(translationL1[1])
+                translation[2] = float(translationL1[2])
+
+                pose = Pose(rotmat2qvec(rotation), translation)
+                self.addPose(str(idCounter), pose)
+                idCounter += 1

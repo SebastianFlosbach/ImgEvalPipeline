@@ -38,9 +38,8 @@ def reduce(m):
 groundTruth = Scene()
 estimation = Scene()
 
-#groundTruth.readCalibration('C:/Users/Administrator/Documents/Data/st_peters_square/set_100/calibration')
-groundTruth.readGL3D('C:/Users/Administrator/Documents/Data/GL3D/data/59f70ab1e5c5d366af29bf3e/geolabel/cameras.txt')
-estimation.readAlembic('C:/Users/Administrator/Documents/Projects/Evaluation/poses_GL3D_av.txt')
+groundTruth.readMVS('C:/Users/Administrator/Desktop/ImgEvalPipeline/data/fountain_dense/cameras/')
+estimation.readAlembic('C:/Users/Administrator/Desktop/ImgEvalPipeline/Cache/dfm/StructureFromMotion/poses.txt')
 
 estimationKeys = list(estimation.poses.keys())
 angles = []
@@ -85,4 +84,4 @@ print("mAA: ", cummulatedAngles)
 bins = np.arange(0, threshold, 1)
 plt.hist(np.clip(angles, bins[0], bins[-1]), bins=bins, density=False, cumulative=False)
 #plt.hist(angles, bins=bins, density=False, cumulative=False)
-plt.show()
+#plt.show()
