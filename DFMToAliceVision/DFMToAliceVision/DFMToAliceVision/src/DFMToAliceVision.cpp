@@ -70,6 +70,7 @@ int main(int argc, char* argv[])
 	float outlierThreshold;
 	bool useKeyPointFiltering;
 	int keyPointThreshold;
+	int maxFileLength;
 
 	po::options_description params("Params");
 	params.add_options()
@@ -81,7 +82,8 @@ int main(int argc, char* argv[])
 		("useOutlierFiltering", po::value<bool>(&useOutlierFiltering)->default_value(false))
 		("outlierThreshold", po::value<float>(&outlierThreshold)->default_value(0.75), "Set threshold for outlier detection.")
 		("useKeyPointFiltering", po::value<bool>(&useKeyPointFiltering)->default_value(false))
-		("keyPointThreshold", po::value<int>(&keyPointThreshold)->default_value(10));
+		("keyPointThreshold", po::value<int>(&keyPointThreshold)->default_value(10))
+		("maxFileLength", po::value<int>(&maxFileLength)->default_value(200000));
 		
 
 	po::variables_map vm;
@@ -94,7 +96,7 @@ int main(int argc, char* argv[])
 
 	vm.notify();
 
-	OutputWriter writer = OutputWriter(output);
+	OutputWriter writer = OutputWriter(output, maxFileLength);
 	writer.createOutputDirectory();
 
 	aliceVision::sfmData::SfMData sfmData;

@@ -17,7 +17,7 @@ namespace avf = aliceVision::feature;
 
 class OutputWriter {
 public:
-	OutputWriter(const std::string& basePath) : basePath_(basePath)
+	OutputWriter(const std::string& basePath, int maxFileLength) : basePath_(basePath), matchFileMaxLength_(maxFileLength)
 	{
 		if (!std::filesystem::exists(basePath_)) {
 			std::filesystem::create_directories(basePath_);
@@ -70,7 +70,7 @@ private:
 	std::string basePath_;
 	int currentMatchFileIndex_ = 0;
 	int currentMatchFileLength_ = 0;
-	int matchFileMaxLength_ = 25000;
+	int matchFileMaxLength_;
 
 	const std::string regionsDirectory = "/regions/";
 	const std::string matchesDirectory = "/matches/";
