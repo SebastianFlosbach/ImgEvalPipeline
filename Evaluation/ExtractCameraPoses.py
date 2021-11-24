@@ -38,8 +38,8 @@ def reduce(m):
 groundTruth = Scene()
 estimation = Scene()
 
-groundTruth.readMVS('C:/Users/Administrator/Desktop/ImgEvalPipeline/data/fountain_dense/cameras/')
-estimation.readAlembic('C:/Users/Administrator/Desktop/ImgEvalPipeline/Cache/dfm/StructureFromMotion/poses.txt')
+groundTruth.readMVS('C:/Users/Administrator/Desktop/ImgEvalPipeline/cameras/')
+estimation.readAlembic('C:/Users/Administrator/Desktop/ImgEvalPipeline/Cache/aliceVision/StructureFromMotion/poses.txt')
 
 estimationKeys = list(estimation.poses.keys())
 angles = []
@@ -61,12 +61,6 @@ for eKey1 in list(estimationKeys):
             angles.append(math.degrees(dq))
         else:
             angles.append(360 - math.degrees(dq))
-            
-# Append missing angles from missing groundTruth keys
-for k in groundTruth.poses.keys():
-    if not k in estimation.poses:
-        #angles.append(float('inf'))
-        continue
 
 threshold = 10
 counter = 0
