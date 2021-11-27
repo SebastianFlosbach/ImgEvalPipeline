@@ -35,47 +35,48 @@ def translationDelta(t_1, t_2, dR):
 def reduce(m):
     return [m[0][:3], m[1][:3], m[2][:3]]
 
-groundTruth = Scene()
-estimation = Scene()
+def calculateMAA(groundTruthDir, estimationDir):
+    groundTruth = Scene()
+    estimation = Scene()
 
-groundTruth.readMVS('C:/Users/Administrator/Desktop/ImgEvalPipeline/cameras/')
-estimation.readAlembic('C:/Users/Administrator/Desktop/ImgEvalPipeline/Cache/aliceVision/StructureFromMotion/poses.txt')
+    groundTruth.readMVS(groundTruthDir)
+    estimation.readAlembic(estimationDir)
 
-estimationKeys = list(estimation.poses.keys())
-angles = []
-for eKey1 in list(estimationKeys):
-    estimationKeys.remove(eKey1)
-    if not eKey1 in groundTruth.poses:
-        #angles.append(float('inf'))
-        continue
-    for eKey2 in list(estimationKeys):
-        diff_gt = quaternionAngle(groundTruth.poses[eKey1].rotation, groundTruth.poses[eKey2].rotation)
-        diff_e = quaternionAngle(estimation.poses[eKey1].rotation, estimation.poses[eKey2].rotation)
-        dq = abs(diff_gt - diff_e)
-        print(eKey1, eKey2)
-        print("\tRotation:")
-        print("\t\tEstimation:", math.degrees(diff_e))
-        print("\t\tGround Truth:", math.degrees(diff_gt))
-        print("\t\tDifference:", math.degrees(dq))
-        if(math.degrees(dq) < 180):
-            angles.append(math.degrees(dq))
-        else:
-            angles.append(360 - math.degrees(dq))
+    estimationKeys = list(estimation.poses.keys())
+    angles = []
+    for eKey1 in list(estimationKeys):
+        estimationKeys.remove(eKey1)
+        if not eKey1 in groundTruth.poses:
+            #angles.append(float('inf'))
+            continue
+        for eKey2 in list(estimationKeys):
+            diff_gt = quaternionAngle(groundTruth.poses[eKey1].rotation, groundTruth.poses[eKey2].rotation)
+            diff_e = quaternionAngle(estimation.poses[eKey1].rotation, estimation.poses[eKey2].rotation)
+            dq = abs(diff_gt - diff_e)
+            print(eKey1, eKey2)
+            print("\tRotation:")
+            print("\t\tEstimation:", math.degrees(diff_e))
+            print("\t\tGround Truth:", math.degrees(diff_gt))
+            print("\t\tDifference:", math.degrees(dq))
+            if(math.degrees(dq) < 180):
+                angles.append(math.degrees(dq))
+            else:
+                angles.append(360 - math.degrees(dq))
 
-threshold = 10
-counter = 0
-cummulatedAngles = 0
-for angle in np.clip(angles, 0, threshold):
-    counter += 1
-    cummulatedAngles += threshold - math.floor(angle)
+    threshold = 10
+    counter = 0
+    cummulatedAngles = 0
+    for angle in np.clip(angles, 0, threshold):
+        counter += 1
+        cummulatedAngles += threshold - math.floor(angle)
 
-cummulatedAngles /= (threshold * counter)
+    cummulatedAngles /= (threshold * counter)
 
-print("Min Angle: ", min(angles))
-print("Max Angle: ", max(angles))
-print("mAA: ", cummulatedAngles)
+    print("Min Angle: ", min(angles))
+    print("Max Angle: ", max(angles))
+    print("mAA: ", cummulatedAngles)
 
-bins = np.arange(0, threshold, 1)
-plt.hist(np.clip(angles, bins[0], bins[-1]), bins=bins, density=False, cumulative=False)
-#plt.hist(angles, bins=bins, density=False, cumulative=False)
-#plt.show()
+    bins = np.arange(0, threshold, 1)
+    plt.hist(np.clip(angles, bins[0], bins[-1]), bins=bins, density=False, cumulative=False)
+    #plt.hist(angles, bins=bins, density=False, cumulative=False)
+    #plt.show()
