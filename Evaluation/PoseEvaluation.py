@@ -2,7 +2,6 @@ import numpy as np
 import quaternion
 from Scene import Scene
 import math
-import matplotlib.pyplot as plt
 
 def quaternionAngle(q_gt, q):
    diff = q_gt * np.conjugate(q)
@@ -35,7 +34,7 @@ def translationDelta(t_1, t_2, dR):
 def reduce(m):
     return [m[0][:3], m[1][:3], m[2][:3]]
 
-def calculateMAA(groundTruthDir, estimationDir):
+def calculateAngles(groundTruthDir, estimationDir):
     groundTruth = Scene()
     estimation = Scene()
 
@@ -62,7 +61,10 @@ def calculateMAA(groundTruthDir, estimationDir):
                 angles.append(math.degrees(dq))
             else:
                 angles.append(360 - math.degrees(dq))
+    
+    return angles
 
+def calculateMAA(angles):
     threshold = 10
     counter = 0
     cummulatedAngles = 0
@@ -76,7 +78,4 @@ def calculateMAA(groundTruthDir, estimationDir):
     print("Max Angle: ", max(angles))
     print("mAA: ", cummulatedAngles)
 
-    bins = np.arange(0, threshold, 1)
-    plt.hist(np.clip(angles, bins[0], bins[-1]), bins=bins, density=False, cumulative=False)
-    #plt.hist(angles, bins=bins, density=False, cumulative=False)
-    #plt.show()
+    return cummulatedAngles
