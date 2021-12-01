@@ -64,15 +64,14 @@ def calculateAngles(groundTruthDir, estimationDir):
     
     return angles
 
-def calculateMAA(angles):
-    threshold = 10
-    counter = 0
+def calculateMAA(angles, threshold = 10):
     cummulatedAngles = 0
-    for angle in np.clip(angles, 0, threshold):
-        counter += 1
+    for angle in angles:
+        if angle > threshold:
+            continue
         cummulatedAngles += threshold - math.floor(angle)
 
-    cummulatedAngles /= (threshold * counter)
+    cummulatedAngles /= (threshold * len(angles))
 
     print("Min Angle: ", min(angles))
     print("Max Angle: ", max(angles))
