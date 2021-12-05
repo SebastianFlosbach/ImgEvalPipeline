@@ -8,9 +8,10 @@ import numpy as np
 import glob
 import win32gui
 import win32con
+from pathlib import Path
 
 # Settings
-dataset = 'castle_dense'
+dataset = 'fountain_dense'
 imageDst = 1
 loadAnglesFromFile = False
 # Settings
@@ -21,6 +22,7 @@ def clearDirectory(path):
         os.remove(filePath)
 
 def saveAngles(name, angles):
+    Path('data/' + dataset + '/r' + str(imageDst)).mkdir(parents=True, exist_ok=True)
     with open('data/' + dataset + '/r' + str(imageDst) + '/angles_' + name + '.txt', 'w') as file:
         for angle in angles:
             file.write(str(angle) + '\n')
@@ -34,7 +36,7 @@ def loadAngles(name):
 
 def plotAngles(angles, threshold, cumulative=False):
     bins = np.arange(0, threshold + 1, 1)
-    plt.hist(np.clip(angles, bins[0], bins[-1]), bins=bins, density=False, cumulative=cumulative)
+    plt.hist(angles, bins=bins, density=False, cumulative=cumulative)
     plt.show()
 
 def killKeypointWindow():
@@ -92,9 +94,7 @@ else:
                 print('DFM timed out!')
                 continue
 
-            #sp.call([runDFMTasks])
             sp.call([runAliceVisionTasks])
-
 
             angles = pe.calculateAngles('cameras/', 'Cache/dfm/StructureFromMotion/poses.txt')
             anglesDFM.extend(angles)
