@@ -1,6 +1,6 @@
 import subprocess as sp
 from threading import Timer
-from shutil import copyfile, rmtree
+from shutil import copyfile
 import os
 import PoseEvaluation as pe
 import matplotlib.pyplot as plt

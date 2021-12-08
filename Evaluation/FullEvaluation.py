@@ -1,6 +1,5 @@
 import subprocess as sp
 from threading import Timer
-from shutil import copyfile, rmtree
 import os
 import PoseEvaluation as pe
 import matplotlib.pyplot as plt
@@ -69,15 +68,15 @@ else:
     copy_tree(imageSource, visualize)
     copy_tree(cameraSource, cameras)
 
-    sp.call([runCommonTasks])
-    try:
-        t = Timer(5, killKeypointWindow)
-        t.start()
-        sp.run([runDFMTasks], timeout=6*60*60)
-    except sp.TimeoutExpired:
-        print('DFM timed out!')
+    # sp.call([runCommonTasks])
+    # try:
+    #     t = Timer(5, killKeypointWindow)
+    #     t.start()
+    #     sp.run([runDFMTasks], timeout=6*60*60)
+    # except sp.TimeoutExpired:
+    #     print('DFM timed out!')
 
-    sp.call([runAliceVisionTasks])
+    # sp.call([runAliceVisionTasks])
 
     anglesDFM = pe.calculateAngles('cameras/', 'Cache/dfm/StructureFromMotion/poses.txt')
     anglesAliceVision = pe.calculateAngles('cameras/', 'Cache/aliceVision/StructureFromMotion/poses.txt')
@@ -87,6 +86,3 @@ else:
 
 maaDFM = pe.calculateMAA(anglesDFM)
 maaAliceVision = pe.calculateMAA(anglesAliceVision)
-
-plotAngles(anglesDFM, 10, True)
-plotAngles(anglesAliceVision, 10, True)

@@ -1,5 +1,4 @@
 import cv2 as cv
-import glob
 
 image1Path = 'C:/Users/Administrator/Desktop/ImgEvalPipeline/visualize/0.jpg'
 image2Path = 'C:/Users/Administrator/Desktop/ImgEvalPipeline/visualize/14.jpg'
