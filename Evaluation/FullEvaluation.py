@@ -12,7 +12,7 @@ from distutils.dir_util import copy_tree
 
 # Settings
 dataset = 'fountain_dense'
-loadAnglesFromFile = True
+loadAnglesFromFile = False
 # Settings
 
 def clearDirectory(path):
@@ -68,15 +68,15 @@ else:
     copy_tree(imageSource, visualize)
     copy_tree(cameraSource, cameras)
 
-    # sp.call([runCommonTasks])
-    # try:
-    #     t = Timer(5, killKeypointWindow)
-    #     t.start()
-    #     sp.run([runDFMTasks], timeout=6*60*60)
-    # except sp.TimeoutExpired:
-    #     print('DFM timed out!')
+    sp.call([runCommonTasks])
+    try:
+        t = Timer(5, killKeypointWindow)
+        t.start()
+        sp.run([runDFMTasks], timeout=6*60*60)
+    except sp.TimeoutExpired:
+        print('DFM timed out!')
 
-    # sp.call([runAliceVisionTasks])
+    sp.call([runAliceVisionTasks])
 
     anglesDFM = pe.calculateAngles('cameras/', 'Cache/dfm/StructureFromMotion/poses.txt')
     anglesAliceVision = pe.calculateAngles('cameras/', 'Cache/aliceVision/StructureFromMotion/poses.txt')

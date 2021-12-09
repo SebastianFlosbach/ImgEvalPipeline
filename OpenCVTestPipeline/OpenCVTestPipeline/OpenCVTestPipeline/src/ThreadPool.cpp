@@ -44,6 +44,7 @@ void ThreadPool<MatchingPair, MatchData>::wait() {
 	}
 
 	waiting_ = true;
+	cvInput_.notify_all();
 	for (auto& thread : threads_) {
 		thread.join();
 	}
@@ -85,6 +86,9 @@ void ThreadPool<MatchingPair, MatchData>::process() {
 				return;
 			}
 			cvInput_.wait(inputLock);
+			if (waiting_) {
+				return;
+			}
 		}
 
 		MatchingPair input = input_.front();

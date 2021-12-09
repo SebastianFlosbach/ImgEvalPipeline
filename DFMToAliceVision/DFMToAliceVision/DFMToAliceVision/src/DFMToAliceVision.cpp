@@ -238,6 +238,8 @@ int main(int argc, char* argv[])
 		std::cout << "Best bag is " << bestBagValue << " with size " << bestBag.size() << std::endl;
 	}
 
+	int avgMatches = 0;
+
 	std::cout << "Writing matches" << std::endl;
 	for (auto& matchData : bestBag) {
 		if (printMatches) {
@@ -261,8 +263,13 @@ int main(int argc, char* argv[])
 
 		std::cout << "Pair " << matchData.source << " - " << matchData.target << ": " << matchData.matches.size() << " matches" << std::endl;
 
+		avgMatches += matchData.matches.size();
+
 		writer.writeMatches(std::to_string(images[matchData.source].getId()), std::to_string(images[matchData.target].getId()), matchData.matches);
 	}
+
+	avgMatches /= bestBag.size();
+	std::cout << "Average number of matches: " << std::to_string(avgMatches) << std::endl;
 
 	return EXIT_SUCCESS;
 }

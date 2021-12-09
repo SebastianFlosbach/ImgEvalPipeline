@@ -42,12 +42,12 @@ endif()
 set(ALICEVISION_LIBS sfmData sfmDataIO feature image numeric)
 foreach(lib ${ALICEVISION_LIBS})
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different $ENV{AliceVision_INSTALL}/${ALICEVISION_CONFIG}/bin/aliceVision_${lib}.dll $<TARGET_FILE_DIR:${PROJECT_NAME}>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different $ENV{AliceVision_INSTALL}/bin/aliceVision_${lib}.dll $<TARGET_FILE_DIR:${PROJECT_NAME}>
     )
 endforeach()
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different $ENV{AliceVision_INSTALL}/${ALICEVISION_CONFIG}/bin/vlsift.dll $<TARGET_FILE_DIR:${PROJECT_NAME}>
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different $ENV{AliceVision_INSTALL}/bin/vlsift.dll $<TARGET_FILE_DIR:${PROJECT_NAME}>
 )
 
 set(BOOST_LIBS filesystem log thread program_options)

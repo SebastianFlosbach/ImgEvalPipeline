@@ -6,7 +6,9 @@
 
 struct Config {
 	std::string sfmDataPath;
-	std::string outputPath;
+	std::string matchFolder;
+	std::string featureFolder;
+	std::string imageMatches;
 	double ransacThreshold;
 	int minFeatures;
 	bool outputMatches;

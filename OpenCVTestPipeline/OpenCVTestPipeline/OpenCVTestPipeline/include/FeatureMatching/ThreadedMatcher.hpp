@@ -15,6 +15,7 @@
 
 #include <functional>
 #include <iostream>
+#include <map>
 #include <vector>
 
 class ThreadedMatcher : public IMatcher, private ThreadPool<MatchingPair, MatchData> {
@@ -23,6 +24,7 @@ public:
 
 	std::vector<MatchData> match(const std::vector<MatchingPair>& pairs) override;
 	std::vector<MatchData> match(const std::vector<FeatureContainer>& features) override;
+	std::vector<MatchData> match(const std::vector<FeatureContainer>& features, const std::map<std::string, std::vector<std::string>>& imageMatches) override;
 
 private:
 	double ransacThreshold_;

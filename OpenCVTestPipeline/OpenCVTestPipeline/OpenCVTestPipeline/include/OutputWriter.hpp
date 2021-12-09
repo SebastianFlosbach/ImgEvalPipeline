@@ -17,31 +17,35 @@ namespace avf = aliceVision::feature;
 
 class OutputWriter {
 public:
-	OutputWriter(const std::string& basePath) : basePath_(basePath)
+	OutputWriter(const std::string& featureFolder, const std::string& matchFolder) : featureFolder_(featureFolder), matchFolder_(matchFolder)
 	{
-		if (!std::filesystem::exists(basePath_)) {
-			std::filesystem::create_directories(basePath_);
+		if (!std::filesystem::exists(featureFolder_)) {
+			std::filesystem::create_directories(featureFolder_);
+		}
+		if (!std::filesystem::exists(matchFolder_)) {
+			std::filesystem::create_directories(matchFolder_);
 		}
 	}
 
 	void clearOutputDirectory() {
-		std::filesystem::remove_all(basePath_);
-		std::filesystem::create_directories(basePath_ + regionsDirectory);
-		std::filesystem::create_directories(basePath_ + matchesDirectory);
+		std::filesystem::remove_all(featureFolder_);
+		std::filesystem::remove_all(matchFolder_);
+		std::filesystem::create_directories(featureFolder_);
+		std::filesystem::create_directories(matchFolder_);
 
 		currentMatchFileIndex_ = 0;
 		currentMatchFileLength_ = 0;
 	}
 
 	void writeRegions(int imageId, std::unique_ptr<avf::SIFT_Regions>& regions) {
-		std::string featureFile = basePath_ + regionsDirectory + std::to_string(imageId) + ".sift_ocv.feat";
-		std::string descriptorFile = basePath_ + regionsDirectory + std::to_string(imageId) + ".sift_ocv.desc";
+		std::string featureFile = featureFolder_ + std::to_string(imageId) + ".sift_ocv.feat";
+		std::string descriptorFile = featureFolder_ + std::to_string(imageId) + ".sift_ocv.desc";
 
 		regions->Save(featureFile, descriptorFile);
 	}
 
 	void writeMatches(const std::string& firstImageId, const std::string& secondImageId, const std::vector<cv::DMatch>& matches) {
-		std::string outfilePath = basePath_ + matchesDirectory + std::to_string(currentMatchFileIndex_) + ".matches.txt";
+		std::string outfilePath = matchFolder_ + std::to_string(currentMatchFileIndex_) + ".matches.txt";
 
 		std::ofstream outfile;
 		outfile.open(outfilePath, std::ios::app);
@@ -61,13 +65,11 @@ public:
 	}
 
 private:
-	std::string basePath_;
+	std::string featureFolder_;
+	std::string matchFolder_;
 	int currentMatchFileIndex_ = 0;
 	int currentMatchFileLength_ = 0;
 	int matchFileMaxLength_ = 500000;
-
-	const std::string regionsDirectory = "/regions/";
-	const std::string matchesDirectory = "/matches/";
 
 };
 

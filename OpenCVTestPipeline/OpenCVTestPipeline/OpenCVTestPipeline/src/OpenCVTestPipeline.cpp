@@ -9,6 +9,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -37,7 +38,9 @@ int main(int argc, const char* argv[])
 	params.add_options()
 		("help,h", "Produce help message.")
 		("input,i", po::value<std::string>(&config.sfmDataPath)->required(), "SfMData file.")
-		("output,o", po::value<std::string>(&config.outputPath)->required(), "Output path for the features and descriptors files (*.feat, *.desc).")
+		("featureFolder", po::value<std::string>(&config.featureFolder)->required(), "Output folder for the features and descriptors files (*.feat, *.desc).")
+		("matchFolder", po::value<std::string>(&config.matchFolder)->required(), "Output folder for match files.")
+		("imageMatches", po::value<std::string>(&config.imageMatches)->default_value(""), "File with image matches to use for feature matching.")
 		("threshold,t", po::value<double>(&config.ransacThreshold)->default_value(2.0), "Threshold for RANSAC filtering.")
 		("features,f", po::value<int>(&config.minFeatures)->default_value(5000), "Number of features to retain.")
 		("outputMatches,om", po::value<bool>(&config.outputMatches)->default_value(false), "Enable output of match visualisation.")
@@ -75,7 +78,7 @@ int main(int argc, const char* argv[])
 	}
 	std::cout << "Found " << images.size() << " images" << std::endl;
 
-	OutputWriter writer = OutputWriter(config.outputPath);
+	OutputWriter writer = OutputWriter(config.featureFolder, config.matchFolder);
 	writer.clearOutputDirectory();
 
 	std::cout << "Extracting features" << std::endl;
@@ -91,10 +94,37 @@ int main(int argc, const char* argv[])
 		writer.writeRegions(feature.imageId, feature.regions);
 	}
 
+	std::map<std::string, std::vector<std::string>> imageMatches;
+	if (!config.imageMatches.empty()) {
+		std::ifstream inputStream;
+		inputStream.open(config.imageMatches);
+
+		std::string line;
+		while (std::getline(inputStream, line)) {
+			std::istringstream iss(line);
+			std::string word;
+			std::string source = "";
+			while (std::getline(iss, word, ' ')) {
+				if (source == "") {
+					source = word;
+				}
+				else {
+					imageMatches[source].push_back(word);
+				}
+			}
+		}
+	}
+
+	std::vector<MatchData> matchData = std::vector<MatchData>();
 	std::cout << "Calculating matches" << std::endl;
 	auto matcher = std::unique_ptr<IMatcher>(new ThreadedMatcher(config.ransacThreshold));
 	//IMatcher_ptr matcher = std::unique_ptr<IMatcher>(new FlannMatcher());
-	std::vector<MatchData> matchData = matcher->match(features);
+	if (config.imageMatches.empty()) {
+		matchData = matcher->match(features);
+	}
+	else {
+		matchData = matcher->match(features, imageMatches);
+	}
 
 	for (const auto& match : matchData) {
 		writer.writeMatches(std::to_string(match.idImage1), std::to_string(match.idImage2), match.matches);	

@@ -1,5 +1,8 @@
 #include "FeatureMatching/ThreadedMatcher.hpp"
 
+#include <algorithm>
+
+
 ThreadedMatcher::ThreadedMatcher(double ransacThreshold) :
 	ThreadPool(std::bind(&ThreadedMatcher::work, this, std::placeholders::_1)),
 	ransacThreshold_(ransacThreshold)
@@ -20,6 +23,20 @@ std::vector<MatchData> ThreadedMatcher::match(const std::vector<FeatureContainer
 	for (size_t indexImage1 = 0; indexImage1 < features.size() - 1; indexImage1++) {
 		for (size_t indexImage2 = indexImage1 + 1; indexImage2 < features.size(); indexImage2++) {
 			addInput({ features.at(indexImage1), features.at(indexImage2) });
+		}
+	}
+	run();
+	wait();
+	return getResults();
+}
+
+std::vector<MatchData> ThreadedMatcher::match(const std::vector<FeatureContainer>& features, const std::map<std::string, std::vector<std::string>>& imageMatches) {
+	for (const auto& itSource : imageMatches) {
+		std::string source = itSource.first;
+		const FeatureContainer& sourceContainer = *std::find_if(features.begin(), features.end(), [source](const FeatureContainer& container) { return std::to_string(container.imageId) == source; });
+		for (const auto& target : itSource.second) {
+			const FeatureContainer& targetContainer = *std::find_if(features.begin(), features.end(), [target](const FeatureContainer& container) { return std::to_string(container.imageId) == target; });
+			addInput({ sourceContainer, targetContainer });
 		}
 	}
 	run();
