@@ -38,8 +38,8 @@ public:
 	}
 
 	void writeRegions(int imageId, std::unique_ptr<avf::SIFT_Regions>& regions) {
-		std::string featureFile = featureFolder_ + std::to_string(imageId) + ".sift_ocv.feat";
-		std::string descriptorFile = featureFolder_ + std::to_string(imageId) + ".sift_ocv.desc";
+		std::string featureFile = featureFolder_ + std::to_string(imageId) + ".sift.feat";
+		std::string descriptorFile = featureFolder_ + std::to_string(imageId) + ".sift.desc";
 
 		regions->Save(featureFile, descriptorFile);
 	}
@@ -52,7 +52,7 @@ public:
 
 		outfile << firstImageId << " " << secondImageId << std::endl;
 		outfile << "1" << std::endl;
-		outfile << "sift_ocv " << matches.size() << std::endl;
+		outfile << "sift " << matches.size() << std::endl;
 
 		for (const auto& entry : matches) {
 			outfile << entry.queryIdx << " " << entry.trainIdx << std::endl;

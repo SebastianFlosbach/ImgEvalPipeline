@@ -11,7 +11,7 @@ from pathlib import Path
 from distutils.dir_util import copy_tree
 
 # Settings
-dataset = 'fountain_dense'
+dataset = 'herzjesu_dense'
 loadAnglesFromFile = False
 # Settings
 
@@ -48,6 +48,7 @@ workingDirectory = 'C:/Users/Administrator/Desktop/ImgEvalPipeline/'
 runCommonTasks = workingDirectory + 'runCommonTasks.bat'
 runDFMTasks = workingDirectory + 'runDFMTasks.bat'
 runAliceVisionTasks = workingDirectory + 'runAliceVisionTasks.bat'
+runOpenCVTasks = workingDirectory + 'runOpenCVTasks.bat'
 
 cameraSource = workingDirectory + 'data/' + dataset + '/cameras/'
 imageSource = workingDirectory + 'data/' + dataset + '/visualize/'
@@ -56,33 +57,47 @@ cameras = workingDirectory + 'cameras/'
 
 anglesDFM = []
 anglesAliceVision = []
+anglesOpenCV = []
 
 os.chdir(workingDirectory)
 
 if loadAnglesFromFile:
     anglesDFM = loadAngles('dfm')
     anglesAliceVision = loadAngles('aliceVision')
+    anglesOpenCV = loadAngles('openCV')
 else:
     clearDirectory(visualize)
     clearDirectory(cameras)
     copy_tree(imageSource, visualize)
     copy_tree(cameraSource, cameras)
 
-    sp.call([runCommonTasks])
+    #sp.call([runCommonTasks])
+    
     try:
         t = Timer(5, killKeypointWindow)
         t.start()
         sp.run([runDFMTasks], timeout=6*60*60)
     except sp.TimeoutExpired:
         print('DFM timed out!')
-
     sp.call([runAliceVisionTasks])
+    sp.call([runOpenCVTasks])
 
     anglesDFM = pe.calculateAngles('cameras/', 'Cache/dfm/StructureFromMotion/poses.txt')
     anglesAliceVision = pe.calculateAngles('cameras/', 'Cache/aliceVision/StructureFromMotion/poses.txt')
+    anglesOpenCV = pe.calculateAngles('cameras/', 'Cache/openCV/StructureFromMotion/poses.txt')
 
     saveAngles('dfm', anglesDFM)
     saveAngles('aliceVision', anglesAliceVision)
+    saveAngles('openCV', anglesOpenCV)
 
 maaDFM = pe.calculateMAA(anglesDFM)
 maaAliceVision = pe.calculateMAA(anglesAliceVision)
+maaOpenCV = pe.calculateMAA(anglesOpenCV)
+
+avgDFM = pe.calculateAverage(anglesDFM)
+avgAliceVision = pe.calculateAverage(anglesAliceVision)
+avgOpenCV = pe.calculateAverage(anglesOpenCV)
+
+print("DFM avg: " + str(avgDFM))
+print("AliceVision avg: " + str(avgAliceVision))
+print("OpenCV avg: " + str(avgOpenCV))

@@ -63,6 +63,13 @@ def calculateAngles(groundTruthDir, estimationDir):
     
     return angles
 
+def calculateAverage(angles):
+    sum = 0
+    for angle in angles:
+        sum += angle
+    sum /= len(angles)
+    return sum
+
 def calculateMAA(angles, threshold = 10):
     cummulatedAngles = 0
     for angle in angles:

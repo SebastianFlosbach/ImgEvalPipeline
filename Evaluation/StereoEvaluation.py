@@ -12,8 +12,10 @@ from pathlib import Path
 
 # Settings
 dataset = 'fountain_dense'
-imageDst = 1
+dataset_name = 'fountain'
+imageDst = 2
 loadAnglesFromFile = False
+onlyShowHistogram = False
 # Settings
 
 def clearDirectory(path):
@@ -34,10 +36,22 @@ def loadAngles(name):
             angles.append(float(angle))
     return angles
 
-def plotAngles(angles, threshold, cumulative=False):
+def plotHistogram(name, angles, threshold, cumulative=False, onlyShow=False):
+    plt.rc('axes', labelsize=24)
+    plt.rc('xtick', labelsize=14)
+    plt.rc('ytick', labelsize=14)
     bins = np.arange(0, threshold + 1, 1)
-    plt.hist(angles, bins=bins, density=False, cumulative=cumulative)
-    plt.show()
+    plt.hist(angles, bins=bins, density=False, cumulative=cumulative, color='royalblue')
+    #plt.title(dataset_name + ' - ' + name)
+    plt.xlabel('Winkeldifferenz in °')
+    plt.ylabel('Bildpaare')
+    plt.xlim(0, threshold)
+    plt.ylim(0, len(angles))
+    plt.tight_layout()
+    if onlyShow:
+        plt.show()
+    else:
+        plt.savefig('data/' + dataset + '/r' + str(imageDst) + '/' + name + '.png')
 
 def killKeypointWindow():
     handle = win32gui.FindWindow(None, 'Keypoints')
@@ -49,6 +63,7 @@ workingDirectory = 'C:/Users/Administrator/Desktop/ImgEvalPipeline/'
 runCommonTasks = workingDirectory + 'runCommonTasks.bat'
 runDFMTasks = workingDirectory + 'runDFMTasks.bat'
 runAliceVisionTasks = workingDirectory + 'runAliceVisionTasks.bat'
+runOpenCVTasks = workingDirectory + 'runOpenCVTasks.bat'
 
 cameraSource = workingDirectory + 'data/' + dataset + '/cameras/'
 imageSource = workingDirectory + 'data/' + dataset + '/visualize/'
@@ -64,10 +79,12 @@ os.chdir(workingDirectory)
 
 anglesDFM = []
 anglesAliceVision = []
+anglesOpenCV = []
 
 if loadAnglesFromFile:
     anglesDFM = loadAngles('dfm')
     anglesAliceVision = loadAngles('aliceVision')
+    anglesOpenCV = loadAngles('openCV')
 else:
     for indexImg1 in range(0, nbImages - 1):
         maxIndex = indexImg1 + imageDst + 1
@@ -95,16 +112,29 @@ else:
                 continue
 
             sp.call([runAliceVisionTasks])
+            sp.call([runOpenCVTasks])
 
             angles = pe.calculateAngles('cameras/', 'Cache/dfm/StructureFromMotion/poses.txt')
             anglesDFM.extend(angles)
             angles = pe.calculateAngles('cameras/', 'Cache/aliceVision/StructureFromMotion/poses.txt')
             anglesAliceVision.extend(angles)
+            angles = pe.calculateAngles('cameras/', 'Cache/openCV/StructureFromMotion/poses.txt')
+            anglesOpenCV.extend(angles)
     saveAngles('dfm', anglesDFM)
     saveAngles('aliceVision', anglesAliceVision)
+    saveAngles('openCV', anglesOpenCV)
 
 maaDFM = pe.calculateMAA(anglesDFM)
+avgDFM = pe.calculateAverage(anglesDFM)
 maaAliceVision = pe.calculateMAA(anglesAliceVision)
+avgAliceVision = pe.calculateAverage(anglesAliceVision)
+maaOpenCV = pe.calculateMAA(anglesOpenCV)
+avgOpenCV = pe.calculateAverage(anglesOpenCV)
 
-plotAngles(anglesDFM, 10, True)
-plotAngles(anglesAliceVision, 10, True)
+print("DFM avg: " + str(avgDFM))
+print("AliceVision avg: " + str(avgAliceVision))
+print("OpenCV avg: " + str(avgOpenCV))
+
+plotHistogram('DFM', anglesDFM, 10, True, onlyShowHistogram)
+plotHistogram('AliceVision', anglesAliceVision, 10, True, onlyShowHistogram)
+plotHistogram('OpenCV', anglesOpenCV, 10, True, onlyShowHistogram)
